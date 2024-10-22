@@ -25,9 +25,14 @@ app.post("/upload", upload.single("file"), (req, res) => {
 });
 
 app.get("/download", (req, res) => {
-  const filePath = path.join(__dirname, "files", "uploadedFile");
-  if (fs.existsSync(filePath)) {
-    res.download(filePath, "latestFile");
+  const folderPath = path.join(__dirname, "files");
+  const fileName = fs
+    .readdirSync(folderPath)
+    .find((file) => file.startsWith("uploadedFile"));
+
+  if (fileName) {
+    const filePath = path.join(folderPath, fileName);
+    res.download(filePath, "latestFile" + path.extname(fileName)); // Use the original extension
   } else {
     res.status(404).send("No file found.");
   }
